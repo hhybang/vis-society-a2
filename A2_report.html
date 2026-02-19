@@ -1,0 +1,320 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Vis & Society Assignment 2</title>
+	<link rel="stylesheet" href="https://vis-society.github.io/assignments/report.css" />
+</head>
+
+<body>
+	<header>
+		<h1>
+			<small>Assignment 2</small>
+			Exploratory Data Analysis
+		</h1>
+
+		<p>
+			<strong>Hyemin (Helen) Bang</strong> - <em>hbang@mit.edu</em>
+		</p>
+	</header>
+	<main>
+		<section>
+			<h2>Subtheme: Zoning and Housing Supply</h2>
+
+			<h3>Overall Analysis Questions</h3>
+			<ol>
+				<li>What is 'single-family' like in reality? Are single-family zones
+					homes for large families with children or small, older households?
+					<p style="margin-left: 1em;">
+						<em>Motivation:</em> In <em>Exclusionary by Design</em>, the author
+						brings up the questions on "whether single-family-only zoning represents
+						good and just policy overall" and how they lack flexibility to accommodate
+						the changing need of residents. This had me thinking what the current
+						single-family homes look like. Increasingly, single-families are small.
+						On average, people are having less children than before, which makes what
+						a single-family looks like now much different from before. What are the
+						families like now that are living in the single-family-only zones vs.
+						other zones?
+					</p>
+				</li>
+				<li>Does single-family zoning create racially and economically segregated communities?</li>
+					<p style="margin-left: 1em;">
+						<em>Motivation:</em> The <em>Illegal City of Somerville</em> highlights how zoning 
+						codes can make it effectively illegal to build the kind of dense, walkable neighborhoods 
+						that already exist and that many people want to live in. 
+						In addition, <em>Exclusionary by Design</em> traces how Greater Boston's zoning history 
+						has been shaped by both class elitism and racial exclusion, arguing that single-family 
+						requirements and large-lot mandates have restricted access to opportunity-rich neighborhoods 
+						by pricing out lower-income households, who are disproportionately people of color. 
+						Does our data show this pattern in Metro Boston? How bad is it? 
+					</p>
+				</li>
+				<li>Does single-family zoning allocate land efficiently, or does it
+					concentrate population into a fraction of available space?</li>
+					<p style="margin-left: 1em;">
+						<em>Motivation: </em> Living in Cambridge, I've always felt the contrast
+						between the spacious single-family neighborhoods in surrounding suburbs
+						and the dense, packed apartment areas closer to the city. It always made me
+						wonder whether this is just a natural urban-to-suburban thing or
+						something actively created by zoning: are single-family zones deliberately
+						reserving more land than their population needs, while everyone else
+						competes for whatever's left?
+					</p>
+			</ol>
+		</section>
+
+		<section>
+			<h2>Discoveries & Insights</h2>
+
+			<figure>
+				<img src="figures/first_map.png" alt="" />
+				<figcaption>
+				<b>Mapping of Zoning Districts Across Metro Boston</b>
+				<br/>
+				This interactive map colors each zone by whether it allows only
+				single-family housing (light blue) or other housing types (dark blue),
+				with hovered text showing the municipality name, zone type, percentage of
+				land zoned single-family, and population. The map reveals that each
+				municipality can contain 1-2 zones with different zoning types,
+				suggesting the dataset stores one row per zone rather than one row per
+				municipality. The map also exposes significant geographic gaps: large
+				portions of Metro Boston, including parts of Boston itself, have no
+				coverage, possibly limiting the generalizability of findings. Also, when hovering
+				over zones, a land vs. people imbalance shows: in Brookline,
+				roughly 70% of residential land is zoned single-family yet houses only
+				about 220 (scaled) people, while the remaining 30% absorbs nearly 600 (also scaled), 
+				suggesting that single-family zoning may reserve disproportionate land for
+				relatively few residents.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/popvsfhh_nfhh.png" alt="" />
+				<figcaption>
+				<b>Population and Households Counts by Municipalities</b>
+				<br/>
+				To investigate the population scale shown by the map, this chart plots
+				the population (blue) and household count (red) from the 2010 Census for
+				each municipality, sorted by population. The ranking reveals some significant
+				irregularities: Salem reports the highest population in the dataset
+				(exceeding Boston), while dense urban communities like Somerville,
+				Chelsea, and Everett report zero despite having tens of thousands
+				of residents in reality, and even mid-range towns like Cambridge appear
+				extremely small compared to Franklin, which ranks third. These cannot be explained
+				by the geographic gaps alone and suggest that the population values in this dataset 
+				may have been scaled or collected to zoning boundaries in ways that distort municipality-level
+				totals, meaning raw population counts should not be taken at face value during analysis.
+				However, the household counts do track consistently with population
+				(higher population towns have more households), suggesting the relative
+				structure of the data may still be useful even if absolute magnitudes
+				are unreliable.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/age_gender.png" alt="" />
+				<figcaption>
+					<b>Population Distribution by Gender and Age Group</b>
+				<br/>
+				Given the population irregularities identified in the previous chart,
+				one possible explanation is that the total population field was
+				incorrectly logged while the underlying demographic subgroups (gender
+				and age) were recorded accurately, which would mean we could reconstruct
+				a "true" total by summing the subgroups. To test this, the chart breaks
+				population down by gender (blue = male, red = female) and age group
+				(under 18, 18-64, 65+). However, the subgroup counts sum exactly to the
+				reported total population for every municipality, ruling out a simple
+				logging error in the total: the subgroups themselves carry the same
+				scaling or allocation issues. This means that while raw counts are
+				unreliable for comparing municipality sizes, proportions (like 
+				"% under 18" or "% female") should still be valid for demographic
+				analysis since the relative proportions within each municipality are consistent. 
+				Not shown here, but further analysis confirmed that proportional
+				demographic patterns across municipalities also do not correlate with
+				single-family zoning rates, reinforcing that the more reliable
+				analytical approach might be comparing between zone types within
+				municipalities.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/zonetype_pct.png" alt="" />
+				<figcaption>
+					<b>Zone Classification Consistency Check Across Municipalities</b>
+				<br/>
+				Each dot represents one of the municipalities, colored by zone
+				classification: red for only single-family, blue for only other housing,
+				and purple for towns with both zone types. The categorical and continuous
+				fields are consistent: red dots sit at exactly 100%, blue at
+				exactly 0%, and purple spans the range between. However, several
+				"Has Both" towns (circled) are effectively single-zone municipalities:
+				Sherborn (99.87%), Sudbury (99.78%), and Weston (99.21%) are mostly SF zoned, 
+				while Essex (0.15%) and Stow (0.03%) have almost no SF zoning. Due to these edge cases, within-town
+				comparisons between SF and Other zones are unreliable since the smaller
+				zone contains too few residents for stable demographic percentages.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/family_size_distribution.png" alt="" />
+				<figcaption>
+					<b>Family Size Distribution: SF Zones vs. Other Zones</b>
+				<br/>
+				Given the data quality issues with municipality-level comparisons
+				identified earlier, this visualization shifts to comparing across zone types,
+				aggregating all SF zones together and all Other zones together across the
+				region. This butterfly chart shows the distribution of family sizes
+				(2-person through 7+) as a percentage of family households in each zone
+				type, with SF zones extending right and Other zones extending left. The
+				distributions are nearly identical: 2-person families dominate both zone
+				types at roughly 41%, and the average family size is 3.15 persons in SF
+				zones versus 3.14 in Other zone: a difference of essentially zero. This
+				plot challenges the image of "single-family" zoning: if the policy exists to
+				protect large families, the data shows these zones do not actually house
+				larger families than other parts of the region.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/zone_property.png" alt="" />
+				<figcaption>
+					<b>Demographic Comparison Across Zone Types: Age, Household Structure</b>
+				<br/>
+				To test whether SF zones differ from Other zones on any demographic
+				dimension, these four panels compare zone-level percentages where each
+				dot represents one zone across Metro Boston. The age panels (% under 18
+				and % age 65+) show nearly complete overlap between SF and Other zones: SF zones are
+				not meaningfully younger or older. The household structure panels show a
+				slightly larger gap: SF zones average 77.3% family households compared
+				to 72.5% in Other zones, with a corresponding difference in
+				single-person households. Even on the dimension where single-family
+				zoning should create the clearest separation, household type, the
+				distributions overlap substantially, reinforcing the analysis from the
+				family size chart that SF zones do not house a distinctly different
+				population from the rest of the region.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/race.png" alt="" />
+				<figcaption>
+					<b>Racial Composition: Single-Family Zones vs. Other Housing Zones</b>
+				<br/>
+				While earlier analysis found no meaningful difference in household structure between
+				zone types, this chart tests whether the people living in those zones
+				differ racially. The left panel compares four major racial groups across
+				SF and Other zones: SF zones are 88.7% white compared to 84.6% in Other
+				zones, with every nonwhite group (Black (2.1% vs 3.2%), Asian (5.2% vs
+				6.6%), and Latino (2.1% vs 3.4%)) underrepresented in SF zones. The
+				right panel summarizes this as a white-versus-nonwhite split, showing
+				that Other zones are more likely to have nonwhite residents
+				(15.4% vs 11.3%). The differences are modest in absolute terms but
+				consistent in direction across every racial group, suggesting that
+				single-family zoning is associated with whiter communities even when
+				household structure looks identical.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/income.png" alt="" />
+				<figcaption>
+					<b>Income Distribution: Single-Family Zones vs. Other Housing Zones</b>
+				<br/>
+				Extending the analysis from race to income, this chart compares the
+				income distribution of households in SF zones versus Other zones using
+				2014-2018 income data. Notably, the household counts in the 2014-2018 income dataset differ
+				substantially from the 2010 Census counts used earlier with a Spearman
+				correlation of only 0.39 between the two, so this analysis uses the
+				2014-2018 income dataset's own household totals as denominators rather than mixing sources.
+				<br />
+				<br />
+				The left panel shows that SF zones have a higher share of households
+				earning $150K+ (15.1% vs 11.7%) and $200K+ (24.8% vs 21.1%), while
+				Other zones have a higher share of lower-income households across both
+				the under $25K and $25-50K brackets. The right panel distills this into
+				a clear summary: nearly 40% of SF zone households earn $150K+ compared
+				to about 33% in Other zones, while Other zones have 25.1% of households
+				earning under $50K compared to only 20.3% in SF zones, suggesting that
+				single-family zoning concentrates wealth in SF zones while lower-income
+				households are filtered into other housing zones.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/grid_sf.png" alt="" />
+				<figcaption>
+					<b>The Cramming Effect: Land Allocation vs. Population Distribution</b>
+				<br/>
+				Shifting from who lives in single-family zones to how much space they
+				occupy, this chart compares two shares across municipalities with
+				single-family zoning across the entire Metro Boston: each square represents 1% of the total. The left
+				grid shows that 74% of residential land is zoned for single-family
+				housing, while the right grid shows that only 53% of the population
+				actually lives in those zones: a 21% gap. The visual
+				contrast between the two grids makes the imbalance obvious as
+				single-family zoning reserves nearly three-quarters of residential land
+				for roughly half the population, while the remaining quarter of land
+				must absorb everyone else. This suggests that single-family zoning may
+				be an inefficient use of residential land, dedicating disproportionate
+				space to housing types that does not serve the majority of residents.
+				</figcaption>
+			</figure>
+
+			<figure>
+				<img src="figures/second_map.png" alt="" />
+				<figcaption>
+					<b>Mapping the Land-Population Gap Across Metro Boston</b>
+				<br/>
+				To identify where this land-population imbalance is most extreme, this
+				interactive map colors each municipality by the gap between its
+				single-family land share and single-family population share, with red
+				indicating municipalities where SF zones take far more land than the
+				population they house. Hovering reveals stark cases like Milton, where
+				98% of land is zoned single-family but only 15% of the population lives
+				there. Conversely, municipalities like Lynn show the opposite: 100% of its
+				population lives in the SF zone despite only 39% of land being zoned
+				that way, resulting in a negative gap. The geographic pattern suggests
+				that the imbalance is most pronounced in certain inner suburbs west
+				and south of Boston, where single-family zoning holds large 
+				land while other, non single-family population concentrates in the small area zoned
+				for other housing.
+				</figcaption>
+			</figure>
+		</section>
+
+		<section>
+			<h2>Summary</h2>
+
+			<p>
+				Through this analysis, I explored three questions about single-family
+				zoning in Metro Boston, working within a dataset that required
+				significant quality caveats, including unreliable raw population counts,
+				within-dataset household discrepancies (between 2010 and 2014-2018), and geographic gaps that exclude
+				some of the region's densest urban cores. Despite these limitations,
+				comparing between zone types rather than across municipalities revealed
+				consistent patterns. 1) Single-family zones do not house distinctly
+				different families: family sizes, age distributions, and household
+				structures are nearly identical across SF and Other zones, challenging
+				the argument that single-family zoning exists to protect large families
+				with children. 2) While household structure looks the same, the
+				people are different: SF zones are slightly whiter and
+				wealthier, with every nonwhite group
+				and every lower-income bracket underrepresented, suggesting that
+				single-family zoning might sort residents by race and income rather than
+				by family need. 3) This comes at a spatial cost: 74% of
+				residential land is reserved for single-family zones that house only 53%
+				of the population, compressing everyone else into a fraction of the
+				remaining space, a pattern most extreme in inner suburbs like Milton,
+				where 98% of land serves just 15% of residents. Taken together, these
+				findings suggest that single-family zoning in Metro Boston functions less
+				as family protection and more as a mechanism that concentrates land,
+				wealth, and racial homogeneity while crowding the remaining population
+				into increasingly dense alternatives. HOWEVER, these conclusions should be
+				interpreted with caution given the dataset's geographic gaps, which likely
+				underrepresent the region's most diverse and dense communities, meaning
+				the true extent of these disparities may be larger than what this
+				analysis captures.
+			</p>
+		</section>
+	</main>
+</body>
+</html>
